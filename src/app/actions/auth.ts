@@ -47,7 +47,7 @@ export async function loginUser(prevState: any, formData: FormData) {
 
   if (error && (error.message.includes("Email not confirmed") || error.message.includes("Invalid login credentials"))) {
     const { data: listData } = await supabaseAdmin.auth.admin.listUsers();
-    const existingAuthUser = listData?.users?.find(u => u.email.toLowerCase() === email);
+    const existingAuthUser = listData?.users?.find(u => u.email?.toLowerCase() === email);
 
     if (existingAuthUser && !existingAuthUser.email_confirmed_at) {
       await supabaseAdmin.auth.admin.updateUserById(existingAuthUser.id, { email_confirm: true });
@@ -102,7 +102,7 @@ export async function signupUser(prevState: any, formData: FormData) {
 
   // Check if user already exists in auth
   const { data: listData } = await supabaseAdmin.auth.admin.listUsers();
-  const existingAuthUser = listData?.users?.find(u => u.email.toLowerCase() === email);
+  const existingAuthUser = listData?.users?.find(u => u.email?.toLowerCase() === email);
 
   let userId: string;
 
@@ -181,7 +181,7 @@ export async function loginAdmin(prevState: any, formData: FormData) {
   // Auto-confirm email if unconfirmed
   if (authError && (authError.message.includes("Email not confirmed") || authError.message.includes("Invalid login credentials"))) {
     const { data: listData } = await supabaseAdmin.auth.admin.listUsers();
-    const existingAuthUser = listData?.users?.find(u => u.email.toLowerCase() === email);
+    const existingAuthUser = listData?.users?.find(u => u.email?.toLowerCase() === email);
 
     if (existingAuthUser && !existingAuthUser.email_confirmed_at) {
       await supabaseAdmin.auth.admin.updateUserById(existingAuthUser.id, { email_confirm: true });
@@ -250,7 +250,7 @@ export async function signupAdmin(prevState: any, formData: FormData) {
 
   // Check if user already exists in auth
   const { data: listData } = await supabaseAdmin.auth.admin.listUsers();
-  const existingAuthUser = listData?.users?.find(u => u.email.toLowerCase() === email);
+  const existingAuthUser = listData?.users?.find(u => u.email?.toLowerCase() === email);
 
   let userId: string;
 
