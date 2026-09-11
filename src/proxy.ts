@@ -57,7 +57,7 @@ export async function proxy(request: NextRequest) {
       .eq("id", user.id)
       .single();
 
-    if (!userRecord || (userRecord.role !== "superadmin" && userRecord.role !== "dealer")) {
+    if (!userRecord || userRecord.role !== "superadmin") {
       const loginUrl = new URL("/admin/login", request.url);
       loginUrl.searchParams.set("error", "AccessDenied");
       return NextResponse.redirect(loginUrl);

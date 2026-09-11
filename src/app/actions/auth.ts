@@ -34,7 +34,7 @@ export async function loginUser(prevState: any, formData: FormData) {
     .eq("email", email)
     .single();
 
-  if (adminCheck && (adminCheck.role === "superadmin" || adminCheck.role === "dealer")) {
+  if (adminCheck && adminCheck.role === "superadmin") {
     return { 
       error: "This email is registered for the CRM Dashboard. Please use the CRM Sign In portal at /admin/login." 
     };
@@ -94,7 +94,7 @@ export async function signupUser(prevState: any, formData: FormData) {
     .eq("email", email)
     .single();
 
-  if (adminCheck && (adminCheck.role === "superadmin" || adminCheck.role === "dealer")) {
+  if (adminCheck && adminCheck.role === "superadmin") {
     return { 
       error: "This email is registered for the CRM Dashboard and cannot be used for the public user portal." 
     };
@@ -111,14 +111,14 @@ export async function signupUser(prevState: any, formData: FormData) {
     await supabaseAdmin.auth.admin.updateUserById(userId, {
       password,
       email_confirm: true,
-      user_metadata: { phone_number }
+      user_metadata: { phone_number, role: "client" }
     });
   } else {
     const { data: newUser, error: createErr } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
-      user_metadata: { phone_number }
+      user_metadata: { phone_number, role: "client" }
     });
 
     if (createErr || !newUser.user) {
@@ -127,11 +127,11 @@ export async function signupUser(prevState: any, formData: FormData) {
     userId = newUser.user.id;
   }
 
-  // Register in users table as client
+  // Register in users table as dealer (default role enum in DB for standard accounts)
   await supabaseAdmin.from("users").upsert({
     id: userId,
     email,
-    role: "client",
+    role: "dealer",
     phone_number,
   });
 
@@ -167,7 +167,7 @@ export async function loginAdmin(prevState: any, formData: FormData) {
     .eq("email", email)
     .single();
 
-  if (clientCheck && clientCheck.role === "client") {
+  if (clientCheck && clientCheck.role !== "superadmin") {
     return { 
       error: "This email is registered for the public user portal and cannot access the CRM Dashboard." 
     };
@@ -204,14 +204,14 @@ export async function loginAdmin(prevState: any, formData: FormData) {
     return { error: authError?.message || "Invalid credentials." };
   }
 
-  // Ensure role in users table is superadmin or dealer
+  // Ensure role in users table is superadmin
   const { data: userRecord } = await supabaseAdmin
     .from("users")
     .select("role")
     .eq("id", authData.user.id)
     .single();
 
-  if (!userRecord || (userRecord.role !== "superadmin" && userRecord.role !== "dealer")) {
+  if (!userRecord || userRecord.role !== "superadmin") {
     await supabase.auth.signOut();
     return { error: "Access Denied: This account does not have CRM Admin privileges." };
   }
@@ -242,7 +242,7 @@ export async function signupAdmin(prevState: any, formData: FormData) {
     .eq("email", email)
     .single();
 
-  if (clientCheck && clientCheck.role === "client") {
+  if (clientCheck && clientCheck.role !== "superadmin") {
     return { 
       error: "This email is registered for the public user portal and cannot be used for CRM Dashboard access." 
     };
@@ -259,14 +259,14 @@ export async function signupAdmin(prevState: any, formData: FormData) {
     await supabaseAdmin.auth.admin.updateUserById(userId, {
       password,
       email_confirm: true,
-      user_metadata: { phone_number }
+      user_metadata: { phone_number, role: "admin" }
     });
   } else {
     const { data: newUser, error: createErr } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
-      user_metadata: { phone_number }
+      user_metadata: { phone_number, role: "admin" }
     });
 
     if (createErr || !newUser.user) {
@@ -345,13 +345,13 @@ export async function requestPasswordResetOTP(identifier: string, isAdminPortal:
       .eq("id", foundAuth.id)
       .single();
 
-    const role = userRole?.role || (isAdminPortal ? "superadmin" : "client");
+    const isSuperadmin = userRole?.role === "superadmin" || foundAuth.user_metadata?.role === "admin";
     const phone = userRole?.phone_number || foundAuth.phone || foundAuth.user_metadata?.phone_number || "Registered Phone";
 
-    if (isAdminPortal && role === "client") {
+    if (isAdminPortal && !isSuperadmin) {
       return { error: "This account is registered for the Public Portal. Please use the public user forgot password page at /forgot-password." };
     }
-    if (!isAdminPortal && (role === "superadmin" || role === "dealer")) {
+    if (!isAdminPortal && isSuperadmin) {
       return { error: "This account is a CRM Admin account. Please use the CRM Admin forgot password page at /admin/forgot-password." };
     }
 
@@ -370,10 +370,10 @@ export async function requestPasswordResetOTP(identifier: string, isAdminPortal:
   const user = users[0];
 
   // Validate Portal Isolation
-  if (isAdminPortal && user.role === "client") {
+  if (isAdminPortal && user.role !== "superadmin") {
     return { error: "This account is registered for the Public Portal. Please use the public user forgot password page at /forgot-password." };
   }
-  if (!isAdminPortal && (user.role === "superadmin" || user.role === "dealer")) {
+  if (!isAdminPortal && user.role === "superadmin") {
     return { error: "This account is a CRM Admin account. Please use the CRM Admin forgot password page at /admin/forgot-password." };
   }
 
