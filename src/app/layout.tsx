@@ -17,6 +17,9 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 export const metadata: Metadata = {
   title: "AcreDesk | Every plot and property, held on one desk.",
   description: "AcreDesk - Every plot and property, held on one desk.",
+  verification: {
+    google: "S4lnSgm0YC2DfvjCCynVsmStKseLdByEwMhDPte0pK0",
+  },
 };
 
 export default function RootLayout({
