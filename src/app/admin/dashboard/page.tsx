@@ -83,7 +83,7 @@ export default async function AdminCRMDashboardPage() {
         name: l.customer_info?.name || "Customer Enquiry",
         email: l.customer_info?.email,
         phone: l.customer_info?.phone,
-        property: l.properties?.title || l.customer_info?.notes || "General Property Inquiry",
+        property: l.properties?.title || l.customer_info?.property_name || l.customer_info?.notes || "General Property Inquiry",
         value: l.customer_info?.budget || (l.properties?.price ? `₹${Number(l.properties.price).toLocaleString("en-IN")}` : "TBD"),
         stage: l.stage || "new",
         notes: l.customer_info?.notes,
@@ -106,7 +106,7 @@ export default async function AdminCRMDashboardPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">CRM Deals Management</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">CRM Deals Management</h1>
           <p className="text-muted-foreground text-sm">
             Search customer records, update deal stages with one click, and manage closed pipelines.
           </p>
@@ -131,7 +131,7 @@ export default async function AdminCRMDashboardPage() {
           </div>
           <div>
             <div className="text-xs text-muted-foreground font-medium">Total Inquiries</div>
-            <div className="text-xl font-bold text-white">{deals.length}</div>
+            <div className="text-xl font-bold text-foreground">{deals.length}</div>
           </div>
         </div>
 
@@ -141,7 +141,7 @@ export default async function AdminCRMDashboardPage() {
           </div>
           <div>
             <div className="text-xs text-muted-foreground font-medium">New Opportunities</div>
-            <div className="text-xl font-bold text-white">{newCount}</div>
+            <div className="text-xl font-bold text-foreground">{newCount}</div>
           </div>
         </div>
 
@@ -151,7 +151,7 @@ export default async function AdminCRMDashboardPage() {
           </div>
           <div>
             <div className="text-xs text-muted-foreground font-medium">In Active Pipeline</div>
-            <div className="text-xl font-bold text-white">{inProgressCount}</div>
+            <div className="text-xl font-bold text-foreground">{inProgressCount}</div>
           </div>
         </div>
 
@@ -161,7 +161,7 @@ export default async function AdminCRMDashboardPage() {
           </div>
           <div>
             <div className="text-xs text-muted-foreground font-medium">Closed Deals</div>
-            <div className="text-xl font-bold text-white">{closedCount}</div>
+            <div className="text-xl font-bold text-foreground">{closedCount}</div>
           </div>
         </div>
       </div>
@@ -170,7 +170,7 @@ export default async function AdminCRMDashboardPage() {
       <div>
         <div className="mb-3 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-white">Deal Stages & Customer Directory</h2>
+            <h2 className="text-lg font-bold text-foreground">Deal Stages & Customer Directory</h2>
             <p className="text-xs text-muted-foreground">Select a stage dropdown to update a deal, or delete closed deals from the database.</p>
           </div>
         </div>

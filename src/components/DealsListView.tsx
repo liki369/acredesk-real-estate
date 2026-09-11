@@ -66,9 +66,7 @@ export default function DealsListView({ initialDeals }: { initialDeals: DealItem
 
     setUpdatingId(dealId);
     startTransition(async () => {
-      if (!dealId.startsWith("demo-lead-")) {
-        await updateLeadStage(dealId, newStage);
-      }
+      await updateLeadStage(dealId, newStage);
       setUpdatingId(null);
     });
   };
@@ -82,9 +80,7 @@ export default function DealsListView({ initialDeals }: { initialDeals: DealItem
     setDeletingId(dealId);
 
     startTransition(async () => {
-      if (!dealId.startsWith("demo-lead-")) {
-        await deleteLead(dealId);
-      }
+      await deleteLead(dealId);
       setDeletingId(null);
     });
   };

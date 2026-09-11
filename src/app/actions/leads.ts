@@ -11,8 +11,13 @@ export async function submitLead(prevState: any, formData: FormData) {
   // We bypass RLS to *insert* a new lead on behalf of the public user.
   const supabaseAdmin = await createAdminClient();
   
+  const rawPropId = formData.get("property_id") as string | null;
+  const isUuid = rawPropId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(rawPropId);
+  const property_id = isUuid ? rawPropId : undefined;
+  const property_name = (formData.get("property_name") as string | null) || undefined;
+
   const rawData = {
-    property_id: formData.get("property_id") || undefined,
+    property_id,
     customer_info: {
       name: formData.get("name"),
       email: formData.get("email"),
@@ -20,6 +25,7 @@ export async function submitLead(prevState: any, formData: FormData) {
       budget: formData.get("budget"),
       viewing_preference: formData.get("viewing_preference"),
       notes: formData.get("notes"),
+      property_name: property_name,
     }
   };
 
@@ -28,13 +34,22 @@ export async function submitLead(prevState: any, formData: FormData) {
     return { error: "Invalid form data", details: validated.error.flatten() };
   }
 
-  // Determine an agent to assign this lead to (dealer or admin).
-  const { data: availableUsers } = await supabaseAdmin
+  // Determine an agent to assign this lead to (prioritize superadmin).
+  const { data: adminUsers } = await supabaseAdmin
     .from("users")
     .select("id")
+    .eq("role", "superadmin")
     .limit(1);
 
-  let assignedAgentId = availableUsers && availableUsers.length > 0 ? availableUsers[0].id : null;
+  let assignedAgentId = adminUsers?.[0]?.id;
+
+  if (!assignedAgentId) {
+    const { data: anyUser } = await supabaseAdmin
+      .from("users")
+      .select("id")
+      .limit(1);
+    assignedAgentId = anyUser?.[0]?.id;
+  }
 
   if (!assignedAgentId) {
     // If database was freshly wiped and has no users yet, create a system agent
