@@ -35,7 +35,7 @@ export default function ContactPage() {
               <Mail className="w-5 h-5 text-primary mr-4 mt-0.5" />
               <div>
                 <p className="text-sm text-muted-foreground font-medium uppercase tracking-wider mb-1">Email</p>
-                <p className="font-semibold text-white">1acredesk@gmail.com</p>
+                <p className="font-semibold text-foreground">1acredesk@gmail.com</p>
               </div>
             </div>
 
@@ -43,7 +43,7 @@ export default function ContactPage() {
               <Clock className="w-5 h-5 text-primary mr-4 mt-0.5" />
               <div>
                 <p className="text-sm text-muted-foreground font-medium uppercase tracking-wider mb-1">Hours</p>
-                <p className="font-semibold">Mon–Sat, 8:00 – 19:00</p>
+                <p className="font-semibold text-foreground">Mon–Sat, 8:00 – 19:00</p>
               </div>
             </div>
           </div>
@@ -54,7 +54,7 @@ export default function ContactPage() {
           <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-2">
             Enquire Now
           </p>
-          <h2 className="text-2xl font-bold mb-8">
+          <h2 className="text-2xl font-bold mb-8 text-foreground">
             Speak to the sales desk
           </h2>
           
@@ -63,7 +63,7 @@ export default function ContactPage() {
                <div className="w-16 h-16 bg-primary/20 text-primary rounded-full flex items-center justify-center mb-4">
                  <Mail className="w-8 h-8" />
                </div>
-               <h3 className="text-xl font-bold text-white mb-2">Enquiry Sent!</h3>
+               <h3 className="text-xl font-bold text-foreground mb-2">Enquiry Sent!</h3>
                <p className="text-muted-foreground">A dealer has been assigned to your case and will reach out shortly.</p>
                <button onClick={() => { setStep(1); window.location.reload(); }} className="mt-6 text-primary hover:underline text-sm font-medium">Submit another enquiry</button>
              </div>

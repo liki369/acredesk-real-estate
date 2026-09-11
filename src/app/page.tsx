@@ -190,27 +190,27 @@ export default function Home() {
             <Sparkles className="w-3.5 h-3.5" />
             Live Verified Inventory
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground">
             Every plot and property, held on one desk.
           </h1>
-          <p className="text-lg text-slate-300 max-w-2xl">
+          <p className="text-lg text-muted-foreground max-w-2xl">
             Browse our active database listings below. Click on any asset to view its complete description, exact map location, and specifications.
           </p>
 
           <div className="w-full mt-4 flex flex-col space-y-4">
-            <div className="flex w-full items-center space-x-2 bg-black/40 border border-white/10 rounded-md p-2 backdrop-blur-md">
+            <div className="flex w-full items-center space-x-2 bg-card border border-border rounded-xl p-2 backdrop-blur-md shadow-sm">
               <Search className="w-5 h-5 text-muted-foreground ml-2" />
               <input
                 type="text"
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
                 placeholder="Search by city, address, or property title..."
-                className="flex-1 bg-transparent border-none text-white placeholder-slate-400 focus:outline-none px-2 text-sm"
+                className="flex-1 bg-transparent border-none text-foreground placeholder:text-muted-foreground focus:outline-none px-2 text-sm"
               />
               {searchFilter && (
                 <button
                   onClick={() => setSearchFilter("")}
-                  className="text-xs text-muted-foreground hover:text-white px-2"
+                  className="text-xs text-muted-foreground hover:text-foreground px-2"
                 >
                   Clear
                 </button>
@@ -222,8 +222,8 @@ export default function Home() {
                 onClick={() => setSelectedType("all")}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                   selectedType === "all"
-                    ? "bg-primary text-primary-foreground font-semibold"
-                    : "border border-white/20 text-white hover:bg-white/10"
+                    ? "bg-primary text-primary-foreground font-semibold shadow-sm"
+                    : "border border-border text-foreground hover:bg-muted"
                 }`}
               >
                 All Assets
@@ -232,8 +232,8 @@ export default function Home() {
                 onClick={() => setSelectedType("land")}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                   selectedType === "land"
-                    ? "bg-primary text-primary-foreground font-semibold"
-                    : "border border-white/20 text-white hover:bg-white/10"
+                    ? "bg-primary text-primary-foreground font-semibold shadow-sm"
+                    : "border border-border text-foreground hover:bg-muted"
                 }`}
               >
                 Lands
@@ -242,8 +242,8 @@ export default function Home() {
                 onClick={() => setSelectedType("plot")}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                   selectedType === "plot"
-                    ? "bg-primary text-primary-foreground font-semibold"
-                    : "border border-white/20 text-white hover:bg-white/10"
+                    ? "bg-primary text-primary-foreground font-semibold shadow-sm"
+                    : "border border-border text-foreground hover:bg-muted"
                 }`}
               >
                 Plots
@@ -252,8 +252,8 @@ export default function Home() {
                 onClick={() => setSelectedType("house")}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                   selectedType === "house"
-                    ? "bg-primary text-primary-foreground font-semibold"
-                    : "border border-white/20 text-white hover:bg-white/10"
+                    ? "bg-primary text-primary-foreground font-semibold shadow-sm"
+                    : "border border-border text-foreground hover:bg-muted"
                 }`}
               >
                 Houses
@@ -262,8 +262,8 @@ export default function Home() {
                 onClick={() => setSelectedType("villa")}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                   selectedType === "villa"
-                    ? "bg-primary text-primary-foreground font-semibold"
-                    : "border border-white/20 text-white hover:bg-white/10"
+                    ? "bg-primary text-primary-foreground font-semibold shadow-sm"
+                    : "border border-border text-foreground hover:bg-muted"
                 }`}
               >
                 Villas
@@ -272,8 +272,8 @@ export default function Home() {
                 onClick={() => setSelectedType("commercial")}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                   selectedType === "commercial"
-                    ? "bg-primary text-primary-foreground font-semibold"
-                    : "border border-white/20 text-white hover:bg-white/10"
+                    ? "bg-primary text-primary-foreground font-semibold shadow-sm"
+                    : "border border-border text-foreground hover:bg-muted"
                 }`}
               >
                 Commercial
@@ -287,7 +287,7 @@ export default function Home() {
       <section className="w-full px-6 py-8 flex flex-col space-y-6 max-w-7xl mx-auto flex-1">
         <div className="flex items-end justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-white">Live Inventory</h2>
+            <h2 className="text-2xl font-bold text-foreground">Live Inventory</h2>
             <p className="text-muted-foreground text-sm">
               {filteredProperties.length} verified listings available
             </p>
@@ -361,12 +361,12 @@ export default function Home() {
             {isLoading ? (
               <div className="col-span-full border border-border bg-card/40 rounded-xl p-16 text-center text-muted-foreground flex flex-col items-center justify-center">
                 <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3" />
-                <p className="text-sm font-medium text-white">Loading properties from live database...</p>
+                <p className="text-sm font-medium text-foreground">Loading properties from live database...</p>
               </div>
             ) : filteredProperties.length === 0 ? (
               <div className="col-span-full border border-dashed border-border rounded-xl p-16 text-center text-muted-foreground bg-card/20">
                 <Building2 className="w-12 h-12 mx-auto mb-3 opacity-40 text-muted-foreground" />
-                <h3 className="text-base font-semibold text-white mb-1">No properties listed</h3>
+                <h3 className="text-base font-semibold text-foreground mb-1">No properties listed</h3>
                 <p className="text-xs max-w-sm mx-auto mb-4">
                   {properties.length === 0
                     ? "Your database currently has no published listings. Use the Inventory Dashboard to upload your first asset."
@@ -419,7 +419,7 @@ export default function Home() {
                   {/* Content */}
                   <div className="p-4 flex flex-col flex-1 justify-between">
                     <div>
-                      <h3 className="font-bold text-base text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors">
+                      <h3 className="font-bold text-base text-foreground mb-1 line-clamp-1 group-hover:text-primary transition-colors">
                         {prop.title}
                       </h3>
                       <p className="text-muted-foreground text-xs flex items-center mb-3">
@@ -428,7 +428,7 @@ export default function Home() {
                       </p>
                     </div>
                     <div className="pt-2.5 border-t border-border flex items-center justify-between">
-                      <span className="text-xs text-slate-400 font-medium">{prop.stats}</span>
+                      <span className="text-xs text-muted-foreground font-medium">{prop.stats}</span>
                       <span className="text-xs font-semibold text-primary group-hover:underline flex items-center gap-1">
                         View Details &rarr;
                       </span>
@@ -499,15 +499,15 @@ export default function Home() {
             <div className="p-6 sm:p-8 space-y-6">
               {/* Title & Location */}
               <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2 leading-tight">
+                <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2 leading-tight">
                   {selectedProperty.title}
                 </h2>
                 <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                  <span className="flex items-center gap-1 text-slate-300">
+                  <span className="flex items-center gap-1 text-foreground/80">
                     <MapPin className="w-4 h-4 text-primary" />
                     {selectedProperty.location}
                   </span>
-                  <span className="flex items-center gap-1 font-mono text-xs text-slate-400">
+                  <span className="flex items-center gap-1 font-mono text-xs text-muted-foreground">
                     <Compass className="w-3.5 h-3.5 text-primary" />
                     Coordinates: {selectedProperty.lat.toFixed(4)}, {selectedProperty.lng.toFixed(4)}
                   </span>
@@ -518,7 +518,7 @@ export default function Home() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="bg-background/60 border border-border rounded-xl p-3.5 text-center">
                   <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider block mb-1">Asset Class</span>
-                  <span className="text-sm font-bold text-white">{selectedProperty.type}</span>
+                  <span className="text-sm font-bold text-foreground">{selectedProperty.type}</span>
                 </div>
                 <div className="bg-background/60 border border-border rounded-xl p-3.5 text-center">
                   <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider block mb-1">Size / Area</span>
@@ -526,7 +526,7 @@ export default function Home() {
                 </div>
                 <div className="bg-background/60 border border-border rounded-xl p-3.5 text-center">
                   <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider block mb-1">City</span>
-                  <span className="text-sm font-bold text-white">{selectedProperty.city}</span>
+                  <span className="text-sm font-bold text-foreground">{selectedProperty.city}</span>
                 </div>
                 <div className="bg-background/60 border border-border rounded-xl p-3.5 text-center">
                   <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider block mb-1">Availability</span>
@@ -536,11 +536,11 @@ export default function Home() {
 
               {/* Description Section */}
               <div className="space-y-2.5">
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                   <Layers className="w-4 h-4 text-primary" />
                   Property Overview & Description
                 </h3>
-                <div className="bg-background/40 border border-border rounded-xl p-4 sm:p-5 text-sm text-slate-300 leading-relaxed whitespace-pre-line">
+                <div className="bg-background/40 border border-border rounded-xl p-4 sm:p-5 text-sm text-foreground/80 leading-relaxed whitespace-pre-line">
                   {selectedProperty.description}
                 </div>
               </div>
@@ -551,7 +551,7 @@ export default function Home() {
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-white">Location Highlights & Access</h4>
+                  <h4 className="text-sm font-bold text-foreground">Location Highlights & Access</h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Situated in <strong>{selectedProperty.city}</strong> at <strong>{selectedProperty.address}</strong>. Direct road connectivity, clear perimeter boundaries, and verified zoning clearance ready for immediate transaction.
                   </p>
@@ -563,7 +563,7 @@ export default function Home() {
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   <button
                     onClick={() => setSelectedProperty(null)}
-                    className="w-full sm:w-auto px-5 py-2.5 border border-border text-muted-foreground hover:text-white rounded-xl text-sm font-medium transition-colors"
+                    className="w-full sm:w-auto px-5 py-2.5 border border-border text-muted-foreground hover:text-foreground rounded-xl text-sm font-medium transition-colors"
                   >
                     Close
                   </button>
@@ -572,7 +572,7 @@ export default function Home() {
                     className={`w-full sm:w-auto px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
                       isSaved(selectedProperty.id)
                         ? "bg-rose-500 text-white hover:bg-rose-600 shadow-md shadow-rose-500/30 border border-rose-400"
-                        : "border border-border bg-card hover:bg-muted text-white"
+                        : "border border-border bg-card hover:bg-muted text-foreground"
                     }`}
                   >
                     <Heart className={`w-4 h-4 ${isSaved(selectedProperty.id) ? "fill-current text-white" : ""}`} />

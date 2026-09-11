@@ -57,7 +57,7 @@ export default function SavedPage() {
             <p className="text-xs font-semibold tracking-widest text-primary uppercase mb-1">
               Personal Shortlist
             </p>
-            <h1 className="text-4xl font-bold tracking-tight text-white mb-1">
+            <h1 className="text-4xl font-bold tracking-tight text-foreground mb-1">
               Saved Listings
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -66,7 +66,7 @@ export default function SavedPage() {
           </div>
           <Link
             href="/"
-            className="bg-card border border-border hover:bg-muted text-white text-xs font-semibold px-4 py-2.5 rounded-lg inline-flex items-center gap-2 transition-colors self-start sm:self-auto"
+            className="bg-card border border-border hover:bg-muted text-foreground text-xs font-semibold px-4 py-2.5 rounded-lg inline-flex items-center gap-2 transition-colors self-start sm:self-auto"
           >
             <span>Explore All Assets</span>
             <ArrowRight className="w-3.5 h-3.5 text-primary" />
@@ -78,7 +78,7 @@ export default function SavedPage() {
             <div className="p-4 rounded-full bg-rose-500/10 text-rose-500 mb-4 border border-rose-500/20">
               <Heart className="w-8 h-8" />
             </div>
-            <h2 className="text-lg font-bold text-white mb-2">No Saved Properties Yet</h2>
+            <h2 className="text-lg font-bold text-foreground mb-2">No Saved Properties Yet</h2>
             <p className="text-sm text-muted-foreground max-w-md mb-6">
               Tap the heart icon on any property card on the homepage to shortlist it for easy access later.
             </p>
@@ -125,7 +125,7 @@ export default function SavedPage() {
                 {/* Content */}
                 <div className="p-4 flex flex-col flex-1 justify-between">
                   <div>
-                    <h3 className="font-bold text-base text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors">
+                    <h3 className="font-bold text-base text-foreground mb-1 line-clamp-1 group-hover:text-primary transition-colors">
                       {prop.title}
                     </h3>
                     <p className="text-muted-foreground text-xs flex items-center mb-3">
@@ -134,7 +134,7 @@ export default function SavedPage() {
                     </p>
                   </div>
                   <div className="pt-2.5 border-t border-border flex items-center justify-between">
-                    <span className="text-xs text-slate-400 font-medium">{prop.stats || prop.area || "Verified"}</span>
+                    <span className="text-xs text-muted-foreground font-medium">{prop.stats || prop.area || "Verified"}</span>
                     <span className="text-xs font-semibold text-primary group-hover:underline flex items-center gap-1">
                       View Details &rarr;
                     </span>
@@ -146,27 +146,27 @@ export default function SavedPage() {
         )}
       </div>
 
-      {/* Property Details Modal */}
+      {/* Property Modal */}
       {selectedProperty && (
-        <div 
+        <div
           className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
           onClick={() => setSelectedProperty(null)}
         >
-          <div 
+          <div
             className="bg-card border border-border rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative custom-scrollbar animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
             <button
               onClick={() => setSelectedProperty(null)}
-              className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-center hover:bg-black/90 transition-colors"
+              className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white hover:bg-black/90 flex items-center justify-center transition-colors"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
 
             {/* Modal Image */}
-            <div className="relative h-64 sm:h-80 w-full overflow-hidden bg-slate-900">
-              <span className="absolute top-4 left-4 z-10 bg-primary/20 backdrop-blur-md text-primary border border-primary/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+            <div className="relative h-64 sm:h-80 w-full overflow-hidden bg-slate-900 rounded-t-2xl">
+              <span className="absolute top-4 left-4 z-10 bg-primary text-primary-foreground px-3 py-1 rounded-md text-xs font-bold tracking-wider uppercase shadow-md">
                 {selectedProperty.type}
               </span>
               <img
@@ -182,7 +182,7 @@ export default function SavedPage() {
             {/* Modal Content */}
             <div className="p-6 sm:p-8 space-y-6">
               <div>
-                <h2 className="text-2xl font-bold text-white mb-2">{selectedProperty.title}</h2>
+                <h2 className="text-2xl font-bold text-foreground mb-2">{selectedProperty.title}</h2>
                 <p className="text-muted-foreground text-sm flex items-center">
                   <MapPin className="w-4 h-4 mr-1.5 text-primary flex-shrink-0" />
                   <span>{selectedProperty.location || `${selectedProperty.address || ""}, ${selectedProperty.city || ""}`}</span>
@@ -192,7 +192,7 @@ export default function SavedPage() {
               {selectedProperty.description && (
                 <div>
                   <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Description & Highlights</h4>
-                  <p className="text-sm text-slate-300 leading-relaxed bg-background/50 border border-border/60 p-4 rounded-xl">
+                  <p className="text-sm text-foreground/80 leading-relaxed bg-background/50 border border-border/60 p-4 rounded-xl">
                     {selectedProperty.description}
                   </p>
                 </div>
