@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useActionState } from "react";
+import { useState, useActionState, Suspense } from "react";
 import { loginUser } from "@/app/actions/auth";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 
-export default function LoginPage() {
+function LoginForm() {
   const searchParams = useSearchParams();
   const errorParam = searchParams.get("error");
   const [showPassword, setShowPassword] = useState(false);
@@ -103,5 +103,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex w-full bg-background" />}>
+      <LoginForm />
+    </Suspense>
   );
 }

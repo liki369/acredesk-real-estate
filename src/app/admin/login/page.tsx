@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useActionState } from "react";
+import { useState, useActionState, Suspense } from "react";
 import { loginAdmin } from "@/app/actions/auth";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ShieldCheck, Lock, ArrowLeft, Eye, EyeOff } from "lucide-react";
 
-export default function AdminLoginPage() {
+function AdminLoginForm() {
   const searchParams = useSearchParams();
   const errorParam = searchParams.get("error");
   const [showPassword, setShowPassword] = useState(false);
@@ -146,5 +146,13 @@ export default function AdminLoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex w-full bg-background" />}>
+      <AdminLoginForm />
+    </Suspense>
   );
 }
