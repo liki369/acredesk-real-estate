@@ -117,6 +117,17 @@ export default function AdminSignupPage() {
               </div>
             </div>
             
+            <p className="text-xs text-muted-foreground leading-relaxed text-center pt-1">
+              By creating an admin account, you agree to AcreDesk&apos;s{" "}
+              <Link href="/terms" className="text-primary hover:underline font-medium" target="_blank">
+                Terms of Service
+              </Link>{" "}
+              and acknowledge our{" "}
+              <Link href="/privacy" className="text-primary hover:underline font-medium" target="_blank">
+                Privacy Policy
+              </Link>.
+            </p>
+
             <button 
               type="submit" 
               className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-primary/20 mt-2 text-sm flex items-center justify-center gap-2"

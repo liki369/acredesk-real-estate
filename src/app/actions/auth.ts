@@ -1,4 +1,10 @@
 "use server";
+/**
+ * © 2026 AcreDesk™. All Rights Reserved.
+ *
+ * Proprietary Authentication & Session Management Module.
+ * Unauthorized copying, distribution, or reverse engineering is strictly prohibited.
+ */
 
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";

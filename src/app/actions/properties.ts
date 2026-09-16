@@ -1,4 +1,10 @@
 "use server";
+/**
+ * © 2026 AcreDesk™. All Rights Reserved.
+ *
+ * Proprietary Inventory & Real Estate Database Actions Module.
+ * Unauthorized copying, scraping, or distribution is strictly prohibited.
+ */
 
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { PropertyInsertSchema } from "@/lib/validations";

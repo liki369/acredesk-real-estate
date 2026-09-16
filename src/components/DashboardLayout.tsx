@@ -127,6 +127,9 @@ export default function DashboardLayout({ children, isAdmin = false }: { childre
                 <span>Sign Out</span>
               </button>
             </form>
+            <div className="mt-3 text-[10px] text-center text-muted-foreground/60 font-mono select-none">
+              &copy; {new Date().getFullYear()} AcreDesk&trade;. All Rights Reserved.
+            </div>
           </div>
         </div>
       </div>

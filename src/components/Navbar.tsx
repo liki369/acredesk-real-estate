@@ -1,4 +1,10 @@
 "use client";
+/**
+ * © 2026 AcreDesk™. All Rights Reserved.
+ *
+ * Proprietary Navigation Component & UI System.
+ * Unauthorized duplication or redistribution is strictly prohibited.
+ */
 
 import Link from "next/link";
 import { useEffect, useState } from "react";

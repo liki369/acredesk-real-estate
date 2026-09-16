@@ -1,3 +1,10 @@
+/**
+ * © 2026 AcreDesk™. All Rights Reserved.
+ *
+ * Proprietary Edge Middleware & Request Route Protection Proxy.
+ * Unauthorized reproduction, tampering, or reverse engineering is strictly prohibited.
+ */
+
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 

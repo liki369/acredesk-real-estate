@@ -1,3 +1,10 @@
+/**
+ * © 2026 AcreDesk™. All Rights Reserved.
+ *
+ * Proprietary Schema Validations & Data Contract Specifications.
+ * Unauthorized duplication or redistribution is strictly prohibited.
+ */
+
 import { z } from "zod";
 
 // --- Properties Schema ---

@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "AcreDesk | Every plot and property, held on one desk.",
@@ -32,6 +33,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <ThemeProvider defaultTheme="dark">
           {children}
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

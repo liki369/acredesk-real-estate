@@ -1,4 +1,10 @@
 "use server";
+/**
+ * © 2026 AcreDesk™. All Rights Reserved.
+ *
+ * Proprietary Lead Intake & CRM Pipeline Module.
+ * Unauthorized copying, scraping, or distribution is strictly prohibited.
+ */
 
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { LeadInsertSchema } from "@/lib/validations";

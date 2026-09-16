@@ -84,6 +84,17 @@ export default function SignupPage() {
               </div>
             </div>
             
+            <p className="text-xs text-muted-foreground leading-relaxed text-center pt-1">
+              By creating an account, you agree to AcreDesk&apos;s{" "}
+              <Link href="/terms" className="text-primary hover:underline font-medium" target="_blank">
+                Terms of Service
+              </Link>{" "}
+              and acknowledge our{" "}
+              <Link href="/privacy" className="text-primary hover:underline font-medium" target="_blank">
+                Privacy Policy
+              </Link>.
+            </p>
+
             <button 
               type="submit" 
               className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-3 rounded mt-2 transition-colors"

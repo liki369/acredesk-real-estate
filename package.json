@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "copyright:deposit": "node scripts/generate_copyright_deposit.js"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

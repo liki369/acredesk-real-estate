@@ -44,3 +44,6 @@ next-env.d.ts
 *.mp4
 *.mov
 
+# generated deposits
+acredesk_copyright_deposit.txt
+
