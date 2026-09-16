@@ -14,9 +14,9 @@ export function Footer() {
   return (
     <footer className="w-full border-t border-border bg-card/60 text-foreground transition-colors mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 lg:gap-12 mb-12">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-10 mb-12">
           {/* Brand & Mission */}
-          <div className="md:col-span-2 space-y-4">
+          <div className="max-w-xl space-y-4">
             <Link href="/" className="flex items-center gap-2.5 group select-none">
               <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center relative transition-transform group-hover:scale-105 shadow-md shadow-primary/20">
                 <div className="w-4 h-4 border-[2.5px] border-background rounded-[3px] absolute top-1.5 left-1.5 border-r-0 border-b-0" />
@@ -43,28 +43,6 @@ export function Footer() {
                 Proprietary Architecture
               </span>
             </div>
-          </div>
-
-          {/* Navigation Links */}
-          <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Platform</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>
-                <Link href="/" className="hover:text-primary transition-colors">Browse Listings</Link>
-              </li>
-              <li>
-                <Link href="/saved" className="hover:text-primary transition-colors">Saved Listings</Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-primary transition-colors">Contact Sales Desk</Link>
-              </li>
-              <li>
-                <Link href="/admin/login" className="hover:text-primary transition-colors inline-flex items-center gap-1">
-                  <span>CRM Admin Portal</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono">Restricted</span>
-                </Link>
-              </li>
-            </ul>
           </div>
 
           {/* Legal & Compliance */}
