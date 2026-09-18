@@ -238,14 +238,14 @@ export default function Home() {
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
-                  className="w-full bg-transparent text-sm text-foreground focus:outline-none capitalize"
+                  className="w-full bg-transparent text-sm text-foreground focus:outline-none capitalize cursor-pointer [&>option]:bg-card [&>option]:text-foreground"
                 >
-                  <option value="all">All Property Types</option>
-                  <option value="house">Houses</option>
-                  <option value="villa">Villas</option>
-                  <option value="plot">Plots</option>
-                  <option value="land">Lands</option>
-                  <option value="commercial">Commercial</option>
+                  <option value="all" className="bg-card text-foreground">All Property Types</option>
+                  <option value="house" className="bg-card text-foreground">Houses</option>
+                  <option value="villa" className="bg-card text-foreground">Villas</option>
+                  <option value="plot" className="bg-card text-foreground">Plots</option>
+                  <option value="land" className="bg-card text-foreground">Lands</option>
+                  <option value="commercial" className="bg-card text-foreground">Commercial</option>
                 </select>
               </div>
 
@@ -586,11 +586,11 @@ export default function Home() {
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="bg-background border border-border rounded-lg p-1.5 text-xs text-foreground focus:outline-none focus:border-primary"
+              className="bg-background border border-border rounded-lg p-1.5 text-xs text-foreground focus:outline-none focus:border-primary [&>option]:bg-card [&>option]:text-foreground"
             >
-              <option value="all">All Locations ({cities.length})</option>
+              <option value="all" className="bg-card text-foreground">All Locations ({cities.length})</option>
               {cities.map((city: any) => (
-                <option key={city} value={city}>
+                <option key={city} value={city} className="bg-card text-foreground">
                   {city}
                 </option>
               ))}

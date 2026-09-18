@@ -178,13 +178,13 @@ function ContactForm() {
                   name="budget" 
                   value={formDataState.budget} 
                   onChange={(e) => setFormDataState({ ...formDataState, budget: e.target.value })}
-                  className="w-full bg-background border border-border rounded-lg p-3 text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+                  className="w-full bg-background border border-border rounded-lg p-3 text-sm text-foreground focus:outline-none focus:border-primary transition-colors [&>option]:bg-card [&>option]:text-foreground"
                 >
-                  <option value="" disabled>Select target budget range...</option>
-                  <option value="₹25 Lakhs - ₹50 Lakhs">₹25 Lakhs - ₹50 Lakhs</option>
-                  <option value="₹50 Lakhs - ₹1 Crore">₹50 Lakhs - ₹1 Crore</option>
-                  <option value="₹1 Crore - ₹2.5 Crores">₹1 Crore - ₹2.5 Crores</option>
-                  <option value="₹2.5 Crores+">₹2.5 Crores+</option>
+                  <option value="" disabled className="bg-card text-muted-foreground">Select target budget range...</option>
+                  <option value="₹25 Lakhs - ₹50 Lakhs" className="bg-card text-foreground">₹25 Lakhs - ₹50 Lakhs</option>
+                  <option value="₹50 Lakhs - ₹1 Crore" className="bg-card text-foreground">₹50 Lakhs - ₹1 Crore</option>
+                  <option value="₹1 Crore - ₹2.5 Crores" className="bg-card text-foreground">₹1 Crore - ₹2.5 Crores</option>
+                  <option value="₹2.5 Crores+" className="bg-card text-foreground">₹2.5 Crores+</option>
                 </select>
               </div>
 
@@ -226,12 +226,12 @@ function ContactForm() {
                   name="viewing_preference" 
                   value={formDataState.viewing_preference}
                   onChange={(e) => setFormDataState({ ...formDataState, viewing_preference: e.target.value })}
-                  className="w-full bg-background border border-border rounded-lg p-3 text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+                  className="w-full bg-background border border-border rounded-lg p-3 text-sm text-foreground focus:outline-none focus:border-primary transition-colors [&>option]:bg-card [&>option]:text-foreground"
                 >
-                  <option value="Weekdays (Morning)">Weekdays (Morning)</option>
-                  <option value="Weekdays (Afternoon)">Weekdays (Afternoon)</option>
-                  <option value="Weekends">Weekends</option>
-                  <option value="Just browsing for now">Just browsing for now</option>
+                  <option value="Weekdays (Morning)" className="bg-card text-foreground">Weekdays (Morning)</option>
+                  <option value="Weekdays (Afternoon)" className="bg-card text-foreground">Weekdays (Afternoon)</option>
+                  <option value="Weekends" className="bg-card text-foreground">Weekends</option>
+                  <option value="Just browsing for now" className="bg-card text-foreground">Just browsing for now</option>
                 </select>
               </div>
 
