@@ -20,7 +20,6 @@ import {
   Compass, 
   Layers, 
   ArrowRight,
-  ExternalLink,
   ShieldCheck,
   PhoneCall,
   Heart,
@@ -608,18 +607,9 @@ export default function Home() {
               <div className="col-span-full border border-dashed border-border rounded-2xl p-16 text-center text-muted-foreground bg-card/20">
                 <Building2 className="w-12 h-12 mx-auto mb-3 opacity-40 text-muted-foreground" />
                 <h3 className="text-base font-semibold text-foreground mb-1">No properties found</h3>
-                <p className="text-xs max-w-sm mx-auto mb-4">
-                  {properties.length === 0
-                    ? "Your database currently has no published listings. Upload your first property from the inventory console."
-                    : "No properties match your current search criteria."}
+                <p className="text-xs max-w-sm mx-auto">
+                  No properties currently match your selected filters. Please adjust your search criteria or contact our sales desk.
                 </p>
-                <Link
-                  href="/admin/inventory"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary/10 text-primary border border-primary/30 text-xs font-semibold hover:bg-primary/20 transition-colors"
-                >
-                  <span>Go to Inventory Management</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </Link>
               </div>
             ) : (
               filteredProperties.map((prop) => (

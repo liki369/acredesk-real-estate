@@ -90,26 +90,20 @@ export function MobileBottomNav() {
         </Link>
 
         {/* Account / Sign In */}
-        {user ? (
-          <Link
-            href="/dashboard"
-            className="flex flex-col items-center gap-1 py-1 px-3 rounded-lg text-[10px] font-medium text-primary hover:text-primary transition-colors"
-          >
+        <button
+          type="button"
+          onClick={() => setAuthModalOpen(true)}
+          className="flex flex-col items-center gap-1 py-1 px-3 rounded-lg text-[10px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+        >
+          {user ? (
             <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-[10px]">
               {user.email?.slice(0, 1).toUpperCase()}
             </div>
-            <span>Portal</span>
-          </Link>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setAuthModalOpen(true)}
-            className="flex flex-col items-center gap-1 py-1 px-3 rounded-lg text-[10px] font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
+          ) : (
             <User className="w-5 h-5 text-muted-foreground" />
-            <span>Account</span>
-          </button>
-        )}
+          )}
+          <span>Account</span>
+        </button>
       </nav>
 
       {/* Auth Modal Triggerable from Mobile Bottom Nav */}

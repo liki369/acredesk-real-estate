@@ -72,13 +72,7 @@ export function Navbar() {
 
             {user ? (
               <div className="flex items-center gap-3">
-                <Link
-                  href="/dashboard"
-                  className="text-xs font-semibold text-primary hover:underline"
-                >
-                  Dashboard
-                </Link>
-                <span className="text-xs text-muted-foreground max-w-[120px] truncate" title={user.email}>
+                <span className="text-xs text-muted-foreground max-w-[140px] truncate" title={user.email}>
                   {user.email}
                 </span>
                 <button 
