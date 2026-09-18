@@ -1,4 +1,11 @@
 "use client";
+/**
+ * © 2026 AcreDesk™. All Rights Reserved.
+ *
+ * Modern Real Estate Landing Page matching reference mockup.
+ * High-definition twilight pool villa hero, multi-tab search container,
+ * featured listings showcase, mobile quick category pills, and live inventory.
+ */
 
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
@@ -16,7 +23,10 @@ import {
   ExternalLink,
   ShieldCheck,
   PhoneCall,
-  Heart
+  Heart,
+  ChevronRight,
+  Map as MapIcon,
+  Home as HomeIcon
 } from "lucide-react";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
@@ -26,7 +36,7 @@ import { parseGeoCoordinates } from "@/lib/utils";
 const MapComponent = dynamic(() => import("@/components/Map"), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full min-h-[500px] rounded-lg border border-border bg-slate-900 flex items-center justify-center text-slate-400">
+    <div className="w-full h-full min-h-[500px] rounded-2xl border border-border bg-slate-900 flex items-center justify-center text-slate-400">
       Loading interactive map...
     </div>
   ),
@@ -61,6 +71,7 @@ export default function Home() {
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [selectedCity, setSelectedCity] = useState<string>("all");
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [activeTab, setActiveTab] = useState<"buy" | "rent">("buy");
 
   const [savedProperties, setSavedProperties] = useState<any[]>([]);
 
@@ -98,54 +109,44 @@ export default function Home() {
   // Fetch real uploaded properties strictly from Supabase
   useEffect(() => {
     async function loadProperties() {
-      setIsLoading(true);
       try {
-        const res = await getPublishedProperties();
-        if (res.success && res.data) {
-          const dbProps: Property[] = res.data.map((p: any) => {
-            const { lat, lng } = parseGeoCoordinates(p.lat_lng, p.city, p.address);
+        setIsLoading(true);
+        const { data, error } = await getPublishedProperties();
+        if (error) {
+          console.error("Error fetching properties from Supabase:", error);
+          return;
+        }
 
-            const rawPrice = Number(p.price) || 0;
-            const formattedPrice = `₹${rawPrice.toLocaleString("en-IN")}`;
-            const specs = p.specs || {};
-            const type = (specs.sub_type || p.type || "house").toUpperCase();
-
-            let stats = specs.area || (type === "HOUSE" || type === "VILLA" ? "4 bd • 3 ba • 3,200 sq ft" : type === "PLOT" ? "Prime Plot" : "Prime Land");
-            if (specs.bedrooms && specs.bathrooms) {
-              stats = `${specs.bedrooms} bd • ${specs.bathrooms} ba • ${specs.area || "Spacious"}`;
-            }
-
+        if (data && data.length > 0) {
+          const formatted: Property[] = data.map((item: any) => {
+            const coords = parseGeoCoordinates(item.location);
             return {
-              id: p.id,
-              type,
-              rawPrice,
-              price: formattedPrice,
-              title: p.title,
-              address: p.address || "",
-              city: p.city || "Hyderabad",
-              location: `${p.address || ""}, ${p.city || ""}`.replace(/^, /, ""),
-              stats,
-              image: (p.media_urls && p.media_urls[0]) || (
-                type === "LAND" || type === "PLOT"
-                  ? "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=800"
-                  : type === "VILLA"
-                  ? "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&q=80&w=800"
-                  : type === "COMMERCIAL"
-                  ? "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=800"
-                  : "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=800"
-              ),
-              lat,
-              lng,
-              description: specs.description || `Verified ${type.toLowerCase()} located at ${p.address || ""}, ${p.city || ""}. Excellent investment with direct road access, verified title deed, and utilities ready.`,
-              area: specs.area,
-              bedrooms: specs.bedrooms,
-              bathrooms: specs.bathrooms,
-              status: p.status || "published",
-              created_at: p.created_at,
+              id: item.id,
+              type: item.type || "Plot",
+              price: item.price ? `₹${Number(item.price).toLocaleString("en-IN")}` : "Price on Request",
+              rawPrice: Number(item.price) || 0,
+              title: item.title,
+              address: item.address || "Address available on request",
+              city: item.city || "Bangalore",
+              location: `${item.address ? item.address + ", " : ""}${item.city || ""}`,
+              stats: item.area ? `${item.area} sq.ft` : (item.type || "Plot"),
+              image: item.images && item.images.length > 0 
+                ? item.images[0] 
+                : "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=800",
+              lat: coords.lat,
+              lng: coords.lng,
+              description: item.description || "Fully clear legal title property available on AcreDesk.",
+              area: item.area ? `${item.area} sq.ft` : undefined,
+              bedrooms: item.bedrooms,
+              bathrooms: item.bathrooms,
+              status: item.status || "published",
+              created_at: item.created_at,
             };
           });
 
-          setProperties(dbProps);
+          setProperties(formatted);
+        } else {
+          setProperties([]);
         }
       } catch (err) {
         console.error("Failed to load live properties:", err);
@@ -178,163 +179,405 @@ export default function Home() {
   });
 
   const cities = Array.from(new Set(properties.map(p => p.city).filter(Boolean)));
+  const featuredItem = properties[0] || null;
 
   return (
-    <main className="min-h-screen bg-background text-foreground flex flex-col">
+    <main className="min-h-screen bg-background text-foreground flex flex-col pb-24 md:pb-0 transition-colors">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative w-full py-14 px-6 bg-gradient-to-b from-card to-background border-b border-border">
-        <div className="max-w-4xl mx-auto flex flex-col items-center text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" />
+      {/* Hero Section with Twilight Luxury Pool Villa (Matching Reference Mockup) */}
+      <section className="relative w-full overflow-hidden bg-slate-950 flex flex-col items-center justify-center border-b border-border">
+        {/* Background Photo */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=85&w=1920" 
+            alt="Luxury modern home with pool at twilight" 
+            className="w-full h-full object-cover opacity-60 scale-105 transform transition-transform duration-1000"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-black/40 to-black/75" />
+        </div>
+
+        {/* Hero Content Overlay */}
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pt-16 pb-20 sm:py-24 lg:py-32 flex flex-col items-center text-center">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-white/20 bg-black/40 backdrop-blur-md text-white text-xs font-semibold uppercase tracking-wider mb-4 shadow-lg">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
             Live Verified Inventory
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground">
-            Every plot and property, held on one desk.
+
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white drop-shadow-md max-w-4xl leading-tight">
+            FIND YOUR PERFECT HOME
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl">
-            Browse our active database listings below. Click on any asset to view its complete description, exact map location, and specifications.
+
+          <p className="text-xs sm:text-sm md:text-base text-slate-200/90 max-w-xl mt-3 drop-shadow leading-relaxed">
+            Search real-estate platform landing page. Every plot, villa, and property, held on one desk.
           </p>
 
-          <div className="w-full mt-4 flex flex-col space-y-4">
-            <div className="flex w-full items-center space-x-2 bg-card border border-border rounded-xl p-2 backdrop-blur-md shadow-sm">
-              <Search className="w-5 h-5 text-muted-foreground ml-2" />
+          {/* Desktop Floating Search Container (Matching Laptop Mockup) */}
+          <div className="hidden md:flex flex-col w-full max-w-3xl mt-8 bg-card/95 backdrop-blur-xl border border-border/80 rounded-2xl p-4 shadow-2xl text-left">
+            {/* Tabs */}
+            <div className="flex items-center gap-2 border-b border-border/60 pb-3 mb-3">
+              <button
+                type="button"
+                onClick={() => setActiveTab("buy")}
+                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  activeTab === "buy"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+              >
+                Buy
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("rent")}
+                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  activeTab === "rent"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+              >
+                Rent
+              </button>
+              <div className="w-px h-4 bg-border mx-1" />
+              <span className="text-xs font-semibold text-muted-foreground">Location</span>
+              <div className="w-px h-4 bg-border mx-1" />
+              <span className="text-xs font-semibold text-muted-foreground">Property Type</span>
+            </div>
+
+            {/* Inputs & Action */}
+            <div className="flex items-center gap-3">
+              <div className="flex-1 flex items-center bg-background border border-border rounded-xl px-3 py-2.5">
+                <MapPin className="w-4 h-4 text-primary shrink-0 mr-2" />
+                <input
+                  type="text"
+                  value={searchFilter}
+                  onChange={(e) => setSearchFilter(e.target.value)}
+                  placeholder="Enter city, neighborhood, or plot title..."
+                  className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                />
+                {searchFilter && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchFilter("")}
+                    className="text-xs text-muted-foreground hover:text-foreground ml-1"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+
+              <div className="w-48 bg-background border border-border rounded-xl px-3 py-2.5">
+                <select
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                  className="w-full bg-transparent text-sm text-foreground focus:outline-none capitalize"
+                >
+                  <option value="all">All Property Types</option>
+                  <option value="house">Houses</option>
+                  <option value="villa">Villas</option>
+                  <option value="plot">Plots</option>
+                  <option value="land">Lands</option>
+                  <option value="commercial">Commercial</option>
+                </select>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById("featured-listings");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-primary/25 flex items-center gap-2 shrink-0 active:scale-95"
+              >
+                <Search className="w-4 h-4" />
+                <span>Search</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Simplified Mobile Search & Quick Category Pills (Matching Smartphone Mockup) */}
+          <div className="flex md:hidden flex-col w-full max-w-sm mt-6 space-y-4">
+            <div className="flex items-center bg-card/95 backdrop-blur-xl border border-border rounded-2xl p-1.5 shadow-xl">
               <input
                 type="text"
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
-                placeholder="Search by city, address, or property title..."
-                className="flex-1 bg-transparent border-none text-foreground placeholder:text-muted-foreground focus:outline-none px-2 text-sm"
+                placeholder="Location..."
+                className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none px-3 py-1.5"
               />
-              {searchFilter && (
-                <button
-                  onClick={() => setSearchFilter("")}
-                  className="text-xs text-muted-foreground hover:text-foreground px-2"
-                >
-                  Clear
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById("featured-listings");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-md active:scale-95"
+                aria-label="Search"
+              >
+                <Search className="w-4 h-4" />
+              </button>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-2">
+            {/* Quick Category Icons */}
+            <div className="flex items-center justify-center gap-3 pt-1">
               <button
-                onClick={() => setSelectedType("all")}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  selectedType === "all"
-                    ? "bg-primary text-primary-foreground font-semibold shadow-sm"
-                    : "border border-border text-foreground hover:bg-muted"
-                }`}
-              >
-                All Assets
-              </button>
-              <button
-                onClick={() => setSelectedType("land")}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  selectedType === "land"
-                    ? "bg-primary text-primary-foreground font-semibold shadow-sm"
-                    : "border border-border text-foreground hover:bg-muted"
-                }`}
-              >
-                Lands
-              </button>
-              <button
-                onClick={() => setSelectedType("plot")}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  selectedType === "plot"
-                    ? "bg-primary text-primary-foreground font-semibold shadow-sm"
-                    : "border border-border text-foreground hover:bg-muted"
-                }`}
-              >
-                Plots
-              </button>
-              <button
-                onClick={() => setSelectedType("house")}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                type="button"
+                onClick={() => setSelectedType(selectedType === "house" ? "all" : "house")}
+                className={`flex flex-col items-center justify-center w-24 py-2.5 rounded-xl border transition-all ${
                   selectedType === "house"
-                    ? "bg-primary text-primary-foreground font-semibold shadow-sm"
-                    : "border border-border text-foreground hover:bg-muted"
+                    ? "bg-blue-500/20 border-blue-500 text-blue-400 font-bold shadow-md shadow-blue-500/10"
+                    : "bg-card/85 backdrop-blur-md border-border text-foreground hover:bg-muted"
                 }`}
               >
-                Houses
+                <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 mb-1">
+                  <HomeIcon className="w-4 h-4" />
+                </div>
+                <span className="text-[11px] font-medium">House</span>
               </button>
+
               <button
-                onClick={() => setSelectedType("villa")}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  selectedType === "villa"
-                    ? "bg-primary text-primary-foreground font-semibold shadow-sm"
-                    : "border border-border text-foreground hover:bg-muted"
+                type="button"
+                onClick={() => setSelectedType(selectedType === "plot" ? "all" : "plot")}
+                className={`flex flex-col items-center justify-center w-24 py-2.5 rounded-xl border transition-all ${
+                  selectedType === "plot"
+                    ? "bg-amber-500/20 border-amber-500 text-amber-400 font-bold shadow-md shadow-amber-500/10"
+                    : "bg-card/85 backdrop-blur-md border-border text-foreground hover:bg-muted"
                 }`}
               >
-                Villas
+                <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500 mb-1">
+                  <Building2 className="w-4 h-4" />
+                </div>
+                <span className="text-[11px] font-medium">Plots</span>
               </button>
+
               <button
-                onClick={() => setSelectedType("commercial")}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  selectedType === "commercial"
-                    ? "bg-primary text-primary-foreground font-semibold shadow-sm"
-                    : "border border-border text-foreground hover:bg-muted"
+                type="button"
+                onClick={() => setSelectedType(selectedType === "land" ? "all" : "land")}
+                className={`flex flex-col items-center justify-center w-24 py-2.5 rounded-xl border transition-all ${
+                  selectedType === "land"
+                    ? "bg-emerald-500/20 border-emerald-500 text-emerald-400 font-bold shadow-md shadow-emerald-500/10"
+                    : "bg-card/85 backdrop-blur-md border-border text-foreground hover:bg-muted"
                 }`}
               >
-                Commercial
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500 mb-1">
+                  <Compass className="w-4 h-4" />
+                </div>
+                <span className="text-[11px] font-medium">Lands</span>
               </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Inventory & Filters */}
-      <section className="w-full px-6 py-8 flex flex-col space-y-6 max-w-7xl mx-auto flex-1">
-        <div className="flex items-end justify-between">
+      {/* Featured Listings Showcase Section (Matching Reference Mockup Cards) */}
+      <section id="featured-listings" className="w-full px-4 sm:px-6 py-10 max-w-7xl mx-auto space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-4">
           <div>
-            <h2 className="text-2xl font-bold text-foreground">Live Inventory</h2>
-            <p className="text-muted-foreground text-sm">
-              {filteredProperties.length} verified listings available
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary mb-1">
+              <Sparkles className="w-3.5 h-3.5" /> Highlighted Portfolio
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
+              Featured Listings
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+              Curated prime selections with verified clear legal titles and direct desk diligence.
             </p>
           </div>
-          <Link
-            href="/contact"
-            className="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
-          >
-            General Inquiry
-          </Link>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowMap(!showMap)}
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold border border-border bg-card hover:bg-muted text-foreground transition-colors shadow-sm"
+            >
+              <MapIcon className="w-4 h-4 text-primary" />
+              <span>{showMap ? "Hide Map Split" : "Show Map View"}</span>
+            </button>
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm"
+            >
+              <PhoneCall className="w-3.5 h-3.5" />
+              <span>Contact Sales Desk</span>
+            </Link>
+          </div>
         </div>
 
-        {/* Filter Bar */}
-        <div className="w-full bg-card border border-border rounded-xl p-4 flex flex-col md:flex-row items-center gap-4">
-          <div className="flex flex-col space-y-1 w-full md:w-1/3">
-            <label className="text-xs font-semibold text-muted-foreground uppercase">City Filter</label>
+        {/* The Two Prominent Mockup Featured Cards (Desktop Card 1 & Card 2) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Card 1: Modern Architecture Listing Card */}
+          <div 
+            onClick={() => featuredItem && setSelectedProperty(featuredItem)}
+            className="bg-card border border-border rounded-2xl overflow-hidden shadow-lg hover:border-primary/60 transition-all hover:-translate-y-1 cursor-pointer group flex flex-col sm:flex-row"
+          >
+            <div className="sm:w-1/2 relative h-56 sm:h-auto overflow-hidden bg-slate-900">
+              <img
+                src={featuredItem?.image || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800"}
+                alt="Modern Container Architecture"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-md text-[11px] font-bold text-white border border-white/10">
+                Featured
+              </div>
+            </div>
+            <div className="sm:w-1/2 p-5 flex flex-col justify-between space-y-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-primary">
+                    {featuredItem?.type || "Villa / Modern"}
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-[11px] text-emerald-500 font-medium">
+                    <ShieldCheck className="w-3.5 h-3.5" /> Verified
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                  {featuredItem?.title || "Modern Architectural Luxury Residence"}
+                </h3>
+                <p className="text-xs text-muted-foreground flex items-center gap-1 line-clamp-1">
+                  <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span>{featuredItem?.location || "Prime Metropolitan Corridor"}</span>
+                </p>
+              </div>
+
+              <div className="pt-3 border-t border-border flex items-center justify-between">
+                <div>
+                  <span className="text-xs text-muted-foreground block">List Price</span>
+                  <span className="text-xl font-extrabold text-foreground">
+                    {featuredItem?.price || "$295,000"}
+                  </span>
+                </div>
+                <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary group-hover:translate-x-1 transition-transform">
+                  <span>View Details</span>
+                  <ChevronRight className="w-4 h-4" />
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Interactive Map Preview Card with Pin & Price Badge */}
+          <div 
+            onClick={() => setShowMap(true)}
+            className="relative bg-gradient-to-br from-emerald-500/10 via-card to-primary/10 border border-border rounded-2xl p-6 shadow-lg hover:border-primary/60 transition-all hover:-translate-y-1 cursor-pointer group flex flex-col justify-between overflow-hidden"
+          >
+            {/* Background Stylized Map Pattern */}
+            <div className="absolute inset-0 opacity-25 dark:opacity-15 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+
+            <div className="relative z-10 flex items-start justify-between">
+              <div className="space-y-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1">
+                  <MapPin className="w-3.5 h-3.5 text-red-500 animate-bounce" />
+                  Geospatial Plot Coordinates
+                </span>
+                <h3 className="text-lg font-bold text-foreground">
+                  Interactive Spatial Map Explorer
+                </h3>
+                <p className="text-xs text-muted-foreground max-w-xs">
+                  Inspect exact boundaries, layout survey markers, and satellite terrain views.
+                </p>
+              </div>
+
+              {/* Pin Tag Badge */}
+              <div className="px-3 py-1.5 rounded-full bg-red-500 text-white font-extrabold text-xs shadow-md shadow-red-500/30 flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5 fill-current" />
+                <span>$23,000+</span>
+              </div>
+            </div>
+
+            <div className="relative z-10 pt-8 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>{properties.length} Geo-tagged properties ready</span>
+              </div>
+
+              <button 
+                type="button"
+                className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center group-hover:scale-110 transition-transform shadow-md shadow-primary/30"
+                aria-label="Open Interactive Map"
+              >
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Live Filter Controls */}
+        <div className="bg-card border border-border rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+            <button
+              onClick={() => setSelectedType("all")}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                selectedType === "all"
+                  ? "bg-primary text-primary-foreground"
+                  : "border border-border text-foreground hover:bg-muted"
+              }`}
+            >
+              All Assets ({properties.length})
+            </button>
+            <button
+              onClick={() => setSelectedType("house")}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                selectedType === "house"
+                  ? "bg-primary text-primary-foreground"
+                  : "border border-border text-foreground hover:bg-muted"
+              }`}
+            >
+              Houses
+            </button>
+            <button
+              onClick={() => setSelectedType("villa")}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                selectedType === "villa"
+                  ? "bg-primary text-primary-foreground"
+                  : "border border-border text-foreground hover:bg-muted"
+              }`}
+            >
+              Villas
+            </button>
+            <button
+              onClick={() => setSelectedType("plot")}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                selectedType === "plot"
+                  ? "bg-primary text-primary-foreground"
+                  : "border border-border text-foreground hover:bg-muted"
+              }`}
+            >
+              Plots
+            </button>
+            <button
+              onClick={() => setSelectedType("land")}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                selectedType === "land"
+                  ? "bg-primary text-primary-foreground"
+                  : "border border-border text-foreground hover:bg-muted"
+              }`}
+            >
+              Lands
+            </button>
+            <button
+              onClick={() => setSelectedType("commercial")}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                selectedType === "commercial"
+                  ? "bg-primary text-primary-foreground"
+                  : "border border-border text-foreground hover:bg-muted"
+              }`}
+            >
+              Commercial
+            </button>
+          </div>
+
+          <div className="flex items-center gap-3 w-full md:w-auto justify-end">
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="bg-background border border-border rounded p-2 text-sm text-foreground focus:outline-none focus:border-primary"
+              className="bg-background border border-border rounded-lg p-1.5 text-xs text-foreground focus:outline-none focus:border-primary"
             >
-              <option value="all">All Cities ({cities.length})</option>
+              <option value="all">All Locations ({cities.length})</option>
               {cities.map((city: any) => (
                 <option key={city} value={city}>
                   {city}
                 </option>
               ))}
             </select>
-          </div>
 
-          <div className="flex flex-col space-y-1 w-full md:w-1/3">
-            <label className="text-xs font-semibold text-muted-foreground uppercase">Asset Type</label>
-            <select
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-              className="bg-background border border-border rounded p-2 text-sm text-foreground focus:outline-none focus:border-primary"
-            >
-              <option value="all">All Property Types</option>
-              <option value="land">Lands</option>
-              <option value="plot">Plots</option>
-              <option value="house">Houses</option>
-              <option value="villa">Villas</option>
-              <option value="commercial">Commercial Buildings</option>
-            </select>
-          </div>
-
-          <div className="flex items-center justify-end w-full md:w-1/3 pt-4 md:pt-0">
             {(selectedType !== "all" || searchFilter || selectedCity !== "all") && (
               <button
                 onClick={() => {
@@ -344,39 +587,37 @@ export default function Home() {
                 }}
                 className="text-xs font-semibold text-primary hover:underline"
               >
-                Reset Filters
+                Reset
               </button>
             )}
           </div>
         </div>
 
-        {/* Split Screen Layout: Left Cards / Right Map */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full mt-2 relative">
-          {/* Left: Property Cards */}
+        {/* Live Inventory Grid with Split Map Option */}
+        <div className={`grid grid-cols-1 ${showMap ? "lg:grid-cols-2" : "grid-cols-1"} gap-6`}>
+          {/* Properties Grid */}
           <div
-            className={`grid grid-cols-1 sm:grid-cols-2 gap-4 auto-rows-max h-[800px] overflow-y-auto pr-2 custom-scrollbar ${
-              showMap ? "hidden lg:grid" : "grid"
-            }`}
+            className={`grid grid-cols-1 sm:grid-cols-2 ${showMap ? "lg:grid-cols-2" : "lg:grid-cols-3"} gap-5 auto-rows-max`}
           >
             {isLoading ? (
-              <div className="col-span-full border border-border bg-card/40 rounded-xl p-16 text-center text-muted-foreground flex flex-col items-center justify-center">
+              <div className="col-span-full border border-border bg-card/40 rounded-2xl p-16 text-center text-muted-foreground flex flex-col items-center justify-center">
                 <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3" />
-                <p className="text-sm font-medium text-foreground">Loading properties from live database...</p>
+                <p className="text-sm font-medium text-foreground">Loading verified listings...</p>
               </div>
             ) : filteredProperties.length === 0 ? (
-              <div className="col-span-full border border-dashed border-border rounded-xl p-16 text-center text-muted-foreground bg-card/20">
+              <div className="col-span-full border border-dashed border-border rounded-2xl p-16 text-center text-muted-foreground bg-card/20">
                 <Building2 className="w-12 h-12 mx-auto mb-3 opacity-40 text-muted-foreground" />
-                <h3 className="text-base font-semibold text-foreground mb-1">No properties listed</h3>
+                <h3 className="text-base font-semibold text-foreground mb-1">No properties found</h3>
                 <p className="text-xs max-w-sm mx-auto mb-4">
                   {properties.length === 0
-                    ? "Your database currently has no published listings. Use the Inventory Dashboard to upload your first asset."
-                    : "No properties match your current filter settings."}
+                    ? "Your database currently has no published listings. Upload your first property from the inventory console."
+                    : "No properties match your current search criteria."}
                 </p>
                 <Link
                   href="/admin/inventory"
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary/10 text-primary border border-primary/30 text-xs font-semibold hover:bg-primary/20 transition-colors"
                 >
-                  <span>Go to Inventory Upload</span>
+                  <span>Go to Inventory Management</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </Link>
               </div>
@@ -385,11 +626,11 @@ export default function Home() {
                 <div
                   key={prop.id}
                   onClick={() => setSelectedProperty(prop)}
-                  className="bg-card border border-border rounded-xl overflow-hidden flex flex-col group relative shadow-sm hover:border-primary/60 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg"
+                  className="bg-card border border-border rounded-2xl overflow-hidden flex flex-col group relative shadow-sm hover:border-primary/60 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg"
                 >
-                  {/* Image */}
+                  {/* Property Image */}
                   <div className="relative h-48 w-full overflow-hidden bg-slate-900">
-                    <div className="absolute top-3 left-3 z-10 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-md text-xs font-bold tracking-wider text-white border border-white/10">
+                    <div className="absolute top-3 left-3 z-10 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-md text-[11px] font-bold tracking-wider text-white border border-white/10 uppercase">
                       {prop.type}
                     </div>
 
@@ -411,15 +652,15 @@ export default function Home() {
                       alt={prop.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute bottom-0 left-0 w-full p-3 bg-gradient-to-t from-black/85 to-transparent">
-                      <span className="text-xl font-bold text-white">{prop.price}</span>
+                    <div className="absolute bottom-0 left-0 w-full p-3 bg-gradient-to-t from-black/90 to-transparent">
+                      <span className="text-lg font-bold text-white">{prop.price}</span>
                     </div>
                   </div>
 
-                  {/* Content */}
+                  {/* Property Card Details */}
                   <div className="p-4 flex flex-col flex-1 justify-between">
                     <div>
-                      <h3 className="font-bold text-base text-foreground mb-1 line-clamp-1 group-hover:text-primary transition-colors">
+                      <h3 className="font-bold text-sm text-foreground mb-1 line-clamp-1 group-hover:text-primary transition-colors">
                         {prop.title}
                       </h3>
                       <p className="text-muted-foreground text-xs flex items-center mb-3">
@@ -439,28 +680,26 @@ export default function Home() {
             )}
           </div>
 
-          {/* Right: Map */}
-          <div
-            className={`${
-              showMap ? "block" : "hidden"
-            } lg:block sticky top-24 h-[calc(100vh-120px)] lg:h-[800px] rounded-xl overflow-hidden border border-border z-10 shadow-sm`}
-          >
-            <MapComponent 
-              properties={filteredProperties} 
-              onSelectProperty={setSelectedProperty} 
-            />
-          </div>
+          {/* Interactive Map (When Toggled) */}
+          {showMap && (
+            <div className="sticky top-20 h-[500px] lg:h-[700px] rounded-2xl overflow-hidden border border-border z-10 shadow-lg">
+              <MapComponent 
+                properties={filteredProperties} 
+                onSelectProperty={setSelectedProperty} 
+              />
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Property Details Interactive Modal */}
+      {/* Property Details Modal */}
       {selectedProperty && (
         <div 
           className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
           onClick={() => setSelectedProperty(null)}
         >
           <div 
-            className="bg-card border border-border rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative custom-scrollbar animate-in zoom-in-95 duration-200"
+            className="bg-card border border-border rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative custom-scrollbar animate-in zoom-in-95 duration-200 text-foreground"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
@@ -490,14 +729,13 @@ export default function Home() {
                 </div>
                 <div className="bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  Verified Title & Ownership
+                  Verified Title &amp; Ownership
                 </div>
               </div>
             </div>
 
             {/* Modal Body */}
             <div className="p-6 sm:p-8 space-y-6">
-              {/* Title & Location */}
               <div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2 leading-tight">
                   {selectedProperty.title}
@@ -538,23 +776,10 @@ export default function Home() {
               <div className="space-y-2.5">
                 <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                   <Layers className="w-4 h-4 text-primary" />
-                  Property Overview & Description
+                  Property Overview &amp; Description
                 </h3>
                 <div className="bg-background/40 border border-border rounded-xl p-4 sm:p-5 text-sm text-foreground/80 leading-relaxed whitespace-pre-line">
                   {selectedProperty.description}
-                </div>
-              </div>
-
-              {/* Location Highlights Box */}
-              <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-start gap-3.5">
-                <div className="p-2 rounded-lg bg-primary/10 text-primary flex-shrink-0 mt-0.5">
-                  <MapPin className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-foreground">Location Highlights & Access</h4>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Situated in <strong>{selectedProperty.city}</strong> at <strong>{selectedProperty.address}</strong>. Direct road connectivity, clear perimeter boundaries, and verified zoning clearance ready for immediate transaction.
-                  </p>
                 </div>
               </div>
 
@@ -591,26 +816,6 @@ export default function Home() {
           </div>
         </div>
       )}
-
-      {/* Mobile Toggle FAB */}
-      <div className="lg:hidden fixed bottom-6 left-0 right-0 flex justify-center z-50 pointer-events-none">
-        <button
-          onClick={() => setShowMap(!showMap)}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-full shadow-lg font-bold flex items-center gap-2 pointer-events-auto transition-transform active:scale-95"
-        >
-          {showMap ? (
-            <>
-              <List className="w-5 h-5" />
-              Show List
-            </>
-          ) : (
-            <>
-              <MapPin className="w-5 h-5" />
-              Show Map
-            </>
-          )}
-        </button>
-      </div>
     </main>
   );
 }
