@@ -203,10 +203,10 @@ export async function getPublishedProperties() {
 
   if (error) {
     console.error("Error fetching published properties:", error);
-    return { success: false, data: [] };
+    return { success: false, error: error.message, data: [] };
   }
 
-  return { success: true, data: data || [] };
+  return { success: true, error: null, data: data || [] };
 }
 
 export async function deleteProperty(propertyId: string) {

@@ -11,9 +11,12 @@ import { createServerClient } from "@supabase/ssr";
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Enforce mandatory login for Admin & Dashboard routes (except login/signup)
+  const isAdminRoute = pathname.startsWith("/admin");
+  const isDashboardRoute = pathname.startsWith("/dashboard");
+
+  // Enforce mandatory login for Admin & Dashboard routes (except admin auth portals)
   if (
-    (pathname.startsWith("/admin") || pathname.startsWith("/dashboard")) &&
+    (isAdminRoute || isDashboardRoute) &&
     pathname !== "/admin/login" &&
     pathname !== "/admin/signup" &&
     pathname !== "/admin/forgot-password"
@@ -41,7 +44,7 @@ export async function proxy(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      const loginUrl = new URL("/admin/login", request.url);
+      const loginUrl = new URL(isAdminRoute ? "/admin/login" : "/login", request.url);
       loginUrl.searchParams.set("error", "AuthenticationRequired");
       return NextResponse.redirect(loginUrl);
     }
@@ -64,10 +67,18 @@ export async function proxy(request: NextRequest) {
       .eq("id", user.id)
       .single();
 
-    if (!userRecord || userRecord.role !== "superadmin") {
-      const loginUrl = new URL("/admin/login", request.url);
-      loginUrl.searchParams.set("error", "AccessDenied");
-      return NextResponse.redirect(loginUrl);
+    if (isAdminRoute) {
+      if (!userRecord || userRecord.role !== "superadmin") {
+        const loginUrl = new URL("/admin/login", request.url);
+        loginUrl.searchParams.set("error", "AccessDenied");
+        return NextResponse.redirect(loginUrl);
+      }
+    } else if (isDashboardRoute) {
+      if (!userRecord) {
+        const loginUrl = new URL("/login", request.url);
+        loginUrl.searchParams.set("error", "AccessDenied");
+        return NextResponse.redirect(loginUrl);
+      }
     }
 
     return response;

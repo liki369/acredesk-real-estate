@@ -24,22 +24,12 @@ import {
   PhoneCall,
   Heart,
   ChevronRight,
-  Map as MapIcon,
   Home as HomeIcon
 } from "lucide-react";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { getPublishedProperties } from "@/app/actions/properties";
 import { parseGeoCoordinates } from "@/lib/utils";
-
-const MapComponent = dynamic(() => import("@/components/Map"), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-full min-h-[500px] rounded-2xl border border-border bg-slate-900 flex items-center justify-center text-slate-400">
-      Loading interactive map...
-    </div>
-  ),
-});
 
 export type Property = {
   id: string | number;
@@ -63,7 +53,6 @@ export type Property = {
 };
 
 export default function Home() {
-  const [showMap, setShowMap] = useState(false);
   const [properties, setProperties] = useState<Property[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedType, setSelectedType] = useState<string>("all");
@@ -178,6 +167,7 @@ export default function Home() {
 
   const cities = Array.from(new Set(properties.map(p => p.city).filter(Boolean)));
   const featuredItem = properties[0] || null;
+  const secondFeaturedItem = properties[1] || null;
 
   return (
     <main className="min-h-screen bg-background text-foreground flex flex-col pb-24 md:pb-0 transition-colors">
@@ -353,13 +343,6 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setShowMap(!showMap)}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold border border-border bg-card hover:bg-muted text-foreground transition-colors shadow-sm"
-            >
-              <MapIcon className="w-4 h-4 text-primary" />
-              <span>{showMap ? "Hide Map Split" : "Show Map View"}</span>
-            </button>
             <Link
               href="/contact"
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm"
@@ -453,68 +436,120 @@ export default function Home() {
             </div>
           )}
 
-          {/* Card 2: Interactive Map Preview Card with Pin & Price Badge */}
-          <div 
-            onClick={() => properties.length > 0 && setShowMap(true)}
-            className={`relative bg-gradient-to-br from-emerald-500/10 via-card to-primary/10 border border-border rounded-2xl p-6 shadow-lg transition-all flex flex-col justify-between overflow-hidden ${
-              properties.length > 0 
-                ? "hover:border-primary/60 hover:-translate-y-1 cursor-pointer group" 
-                : "cursor-default"
-            }`}
-          >
-            {/* Background Stylized Map Pattern */}
-            <div className="absolute inset-0 opacity-25 dark:opacity-15 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+          {/* Card 2: Second Featured Listing or Curated Portfolio Card */}
+          {secondFeaturedItem ? (
+            <div 
+              onClick={() => setSelectedProperty(secondFeaturedItem)}
+              className="bg-card border border-border rounded-2xl overflow-hidden shadow-lg hover:border-primary/60 transition-all hover:-translate-y-1 cursor-pointer group flex flex-col sm:flex-row"
+            >
+              <div className="sm:w-1/2 relative h-56 sm:h-auto overflow-hidden bg-slate-900">
+                <img
+                  src={secondFeaturedItem.image}
+                  alt={secondFeaturedItem.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-md text-[11px] font-bold text-white border border-white/10">
+                  Featured
+                </div>
+              </div>
+              <div className="sm:w-1/2 p-5 flex flex-col justify-between space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold uppercase tracking-wider text-primary">
+                      {secondFeaturedItem.type}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-[11px] text-emerald-500 font-medium">
+                      <ShieldCheck className="w-3.5 h-3.5" /> Verified
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                    {secondFeaturedItem.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1 line-clamp-1">
+                    <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>{secondFeaturedItem.location}</span>
+                  </p>
+                </div>
 
-            <div className="relative z-10 flex items-start justify-between">
-              <div className="space-y-1">
-                <span className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1">
-                  <MapPin className={`w-3.5 h-3.5 ${properties.length > 0 ? "text-red-500 animate-bounce" : "text-muted-foreground"}`} />
-                  Geospatial Plot Coordinates
+                <div className="pt-3 border-t border-border flex items-center justify-between">
+                  <div>
+                    <span className="text-xs text-muted-foreground block">List Price</span>
+                    <span className="text-xl font-extrabold text-foreground">
+                      {secondFeaturedItem.price}
+                    </span>
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary group-hover:translate-x-1 transition-transform">
+                    <span>View Details</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : properties.length === 1 ? (
+            <div className="bg-gradient-to-br from-primary/10 via-card to-background border border-border rounded-2xl p-6 shadow-md flex flex-col justify-between space-y-6">
+              <div className="flex items-center justify-between">
+                <span className="px-2.5 py-1 rounded-md bg-primary/20 text-primary text-[11px] font-bold uppercase tracking-wider">
+                  Verified Portfolio
                 </span>
+                <span className="inline-flex items-center gap-1 text-xs text-emerald-500 font-medium">
+                  <ShieldCheck className="w-3.5 h-3.5" /> Legal Due Diligence
+                </span>
+              </div>
+              
+              <div className="space-y-2">
                 <h3 className="text-lg font-bold text-foreground">
-                  Interactive Spatial Map Explorer
+                  Looking for Specific Plots or Villas?
                 </h3>
-                <p className="text-xs text-muted-foreground max-w-xs">
-                  Inspect exact boundaries, layout survey markers, and satellite terrain views.
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Our acquisitions desk holds verified off-market plots, agricultural acreage, and luxury residences across key growth corridors.
                 </p>
               </div>
 
-              {/* Pin Tag Badge */}
-              <div className={`px-3 py-1.5 rounded-full text-xs font-bold shadow-md flex items-center gap-1 ${
-                properties.length > 0
-                  ? "bg-red-500 text-white shadow-red-500/30"
-                  : "bg-muted text-muted-foreground border border-border"
-              }`}>
-                <MapPin className="w-3.5 h-3.5" />
-                <span>{properties.length > 0 ? `${properties.length} Plots` : "Unavailable"}</span>
+              <div className="pt-4 border-t border-border flex items-center justify-between">
+                <div>
+                  <span className="block text-[11px] text-muted-foreground">Desk Inquiries</span>
+                  <span className="font-bold text-foreground text-sm">Direct Allocation</span>
+                </div>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors shadow-sm"
+                >
+                  <PhoneCall className="w-3.5 h-3.5" />
+                  <span>Inquire Now</span>
+                </Link>
               </div>
             </div>
-
-            <div className="relative z-10 pt-8 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
-                <span className={`w-2 h-2 rounded-full ${properties.length > 0 ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground/40"}`} />
-                <span>
-                  {properties.length > 0 
-                    ? `${properties.length} Geo-tagged properties ready` 
-                    : "0 Geo-tagged properties (Unavailable)"}
-                </span>
-              </div>
-
-              {properties.length > 0 ? (
-                <button 
-                  type="button"
-                  className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center group-hover:scale-110 transition-transform shadow-md shadow-primary/30"
-                  aria-label="Open Interactive Map"
-                >
-                  <ArrowRight className="w-5 h-5" />
-                </button>
-              ) : (
-                <span className="text-xs px-3 py-1.5 rounded-lg bg-muted text-muted-foreground font-medium">
+          ) : (
+            <div className="bg-card/40 border border-dashed border-border rounded-2xl p-6 shadow-sm flex flex-col justify-between space-y-6">
+              <div className="flex items-center justify-between">
+                <span className="px-2.5 py-1 rounded-md bg-muted text-muted-foreground text-[11px] font-bold uppercase tracking-wider">
                   Unavailable
                 </span>
-              )}
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                  No Active Listing
+                </span>
+              </div>
+              
+              <div className="space-y-2 py-4">
+                <h3 className="text-lg font-bold text-foreground">
+                  Featured Listing Unavailable
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed max-w-sm">
+                  There are currently no featured listings available in the live inventory.
+                </p>
+              </div>
+
+              <div className="pt-4 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
+                <div>
+                  <span className="block text-[11px] text-muted-foreground">List Price</span>
+                  <span className="font-bold text-foreground">Unavailable</span>
+                </div>
+                <span className="px-3 py-1 rounded-lg bg-muted text-muted-foreground font-medium text-xs">
+                  Unavailable
+                </span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Live Filter Controls */}
@@ -611,12 +646,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Live Inventory Grid with Split Map Option */}
-        <div className={`grid grid-cols-1 ${showMap ? "lg:grid-cols-2" : "grid-cols-1"} gap-6`}>
-          {/* Properties Grid */}
-          <div
-            className={`grid grid-cols-1 sm:grid-cols-2 ${showMap ? "lg:grid-cols-2" : "lg:grid-cols-3"} gap-5 auto-rows-max`}
-          >
+        {/* Live Inventory Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 auto-rows-max">
             {isLoading ? (
               <div className="col-span-full border border-border bg-card/40 rounded-2xl p-16 text-center text-muted-foreground flex flex-col items-center justify-center">
                 <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3" />
@@ -687,17 +718,6 @@ export default function Home() {
                 </div>
               ))
             )}
-          </div>
-
-          {/* Interactive Map (When Toggled) */}
-          {showMap && (
-            <div className="sticky top-20 h-[500px] lg:h-[700px] rounded-2xl overflow-hidden border border-border z-10 shadow-lg">
-              <MapComponent 
-                properties={filteredProperties} 
-                onSelectProperty={setSelectedProperty} 
-              />
-            </div>
-          )}
         </div>
       </section>
 

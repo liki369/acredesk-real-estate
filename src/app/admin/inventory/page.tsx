@@ -230,11 +230,11 @@ export default function InventoryPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Latitude (Map)</label>
+                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Latitude</label>
                     <input name="lat" type="number" step="any" defaultValue="17.3850" required className="w-full bg-background border border-border rounded-lg p-2.5 text-sm text-foreground focus:outline-none focus:border-primary" />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Longitude (Map)</label>
+                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Longitude</label>
                     <input name="lng" type="number" step="any" defaultValue="78.4867" required className="w-full bg-background border border-border rounded-lg p-2.5 text-sm text-foreground focus:outline-none focus:border-primary" />
                   </div>
                 </div>
@@ -314,7 +314,7 @@ export default function InventoryPage() {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-white">Edit Property Listing</h2>
-                  <p className="text-xs text-muted-foreground">Updates will reflect live immediately across the public homepage and map.</p>
+                  <p className="text-xs text-muted-foreground">Updates will reflect live immediately across the public homepage.</p>
                 </div>
               </div>
               <button 
